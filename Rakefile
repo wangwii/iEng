@@ -27,11 +27,18 @@ task :push do
   puts "...........TODO:..."
 end
 
-## private method
 BASE_DIR = File.dirname(File.expand_path(__FILE__))
 COFFEE_DIR = File.join(BASE_DIR, 'coffee')
 OUTPUT_DIR = File.join(BASE_DIR, 'javascripts')
+task :recompile_coffee do
+  Dir.glob("#{COFFEE_DIR}/*.coffee").each do |coffee_file|
+    js_file = File.join(OUTPUT_DIR, "#{File.basename(coffee_file)}.js")
+    puts "DEBUG ---> Sync coffee script #{File.basename(coffee_file)} to #{File.basename(js_file)}"
+    compile_coffee_script(coffee_file, js_file)
+  end
+end
 
+## private method
 def sync_coffee(req)
   req_path = req.path.to_s
   return unless req_path.respond_to? :end_with?
@@ -39,24 +46,23 @@ def sync_coffee(req)
 
   file_name = File.basename(req_path)
   coffee_file = File.basename(file_name, '.js')
-  coffee_file_path = File.join(COFFEE_DIR, coffee_file)
-  js_file_path = File.join(OUTPUT_DIR, file_name)
+  coffee_file_path, js_file_path = File.join(COFFEE_DIR, coffee_file), File.join(OUTPUT_DIR, file_name)
 
-  if File.exist? coffee_file_path
-    if File.exist?(js_file_path)
-      js_modify, cs_modify = File.mtime(js_file_path), File.mtime(coffee_file_path)
-      if js_modify > cs_modify
-        puts "DEBUG ---> The #{file_name} is already latest version."
-        return
-      end
-    end
-    compile_coffee_script(coffee_file_path, js_file_path)
-  else
-    puts "WARN the coffee script file does not exist. (#{coffee_file_path})"
-  end
+  compile_coffee_script(coffee_file_path, js_file_path)
 end
 
 def compile_coffee_script(coffee_script, js_script)
+  #check params
+  unless File.exist? coffee_script
+    puts "WARN ---> The coffee script file does not exist. (#{coffee_script})"
+    return
+  end
+  if File.exist?(js_script) && File.mtime(js_script) > File.mtime(coffee_script)
+    puts "DEBUG ---> The #{js_script} is already latest version."
+    return
+  end
+
+  #compile and write to js file.
   begin
     js_code = CoffeeScript.compile(File.read(coffee_script))
   rescue => e

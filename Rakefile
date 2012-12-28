@@ -2,6 +2,8 @@ require 'rake'
 require 'coffee-script'
 require 'webrick'
 
+task :default => [:server]
+
 desc "Startup a web server for development and listen coffeescript file changes"
 task :server do
   root = File.dirname(File.expand_path __FILE__)
@@ -22,18 +24,45 @@ task :server do
   server.start
 end
 
-desc "Push to the Github.com"
-task :push do
-  puts "...........TODO:..."
-end
-
 BASE_DIR = File.dirname(File.expand_path(__FILE__))
+DIST_DIR = File.absolute_path(File.join(BASE_DIR, '..', 'iEng_dist'))
 COFFEE_DIR = File.join(BASE_DIR, 'coffee')
 OUTPUT_DIR = File.join(BASE_DIR, 'javascripts')
+desc "Push to the Github.com"
+task :push => :sync_resources do
+  #TODO...
+  #chdir DIST_DIR
+  #puts `git status`
+  #puts "Do you want to push changes to the Github.com?[Y/n]"
+  #confirm = STDIN.gets.chomp
+  #unless confirm.downcase == 'n'
+  #  puts 'git add .'
+  #  puts `git commit -m 'this commit from automation rake task.'`
+  #  puts `git pull`
+  #  puts 'git push'
+  #end
+  #chdir BASE_DIR
+end
+
+task :sync_resources => :recompile_coffee do
+  verbose(true)
+  puts "Sync the javascripts directory..."
+  rm Dir.glob("#{DIST_DIR}/javascripts/*")
+  Dir.glob("#{OUTPUT_DIR}/*.js").each { |f| cp(f, "#{DIST_DIR}/javascripts/") }
+
+  puts "Sync the stylesheets directory..."
+  rm Dir.glob("#{DIST_DIR}/stylesheets/*")
+  Dir.glob("#{BASE_DIR}/stylesheets/*").each { |f| cp(f, "#{DIST_DIR}/stylesheets/") }
+
+  puts "Sync the index.html file..."
+  cp("#{BASE_DIR}/index.html", "#{DIST_DIR}/")
+end
+
+
 task :recompile_coffee do
   Dir.glob("#{COFFEE_DIR}/*.coffee").each do |coffee_file|
     js_file = File.join(OUTPUT_DIR, "#{File.basename(coffee_file)}.js")
-    puts "DEBUG ---> Sync coffee script #{File.basename(coffee_file)} to #{File.basename(js_file)}"
+    puts "DEBUG ---> Compile coffee script #{File.basename(coffee_file)} to #{File.basename(js_file)}"
     compile_coffee_script(coffee_file, js_file)
   end
 end
@@ -64,9 +93,12 @@ def compile_coffee_script(coffee_script, js_script)
 
   #compile and write to js file.
   begin
-    js_code = CoffeeScript.compile(File.read(coffee_script))
+    cs_code = File.read(coffee_script, {encoding: 'utf-8'})
+    #puts "(my codes:\n#{cs_code.encoding})-#{cs_code}"
+    js_code = CoffeeScript.compile(cs_code)
   rescue => e
     js_code = %Q[alert("CoffeeScript compilation error: #{e}")]
   end
-  File.open(js_script, 'w') { |f| f.write(js_code) }
+  File.open(js_script, 'w', {encoding: 'utf-8:utf-8'}) { |f| f.write(js_code) }
+  #puts "new_codes:\n#{File.read(js_script, {encoding: 'utf-8'})}"
 end

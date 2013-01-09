@@ -3,6 +3,7 @@ source 'http://ruby.taobao.org/'
 
 gem 'rake'
 gem 'cucumber'
+gem 'rspec-expectations'
 gem 'coffee-script'
 gem 'watir-webdriver'
 

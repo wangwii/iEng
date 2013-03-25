@@ -1,3 +1,4 @@
+_dist
 Gemfile.lock
 .idea
 *.coffee.js

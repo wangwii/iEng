@@ -7,7 +7,7 @@ task :default => [:server]
 desc "Startup a web server for development and listen coffeescript file changes"
 task :server do
   root = File.dirname(File.expand_path __FILE__)
-  port = (ENV['port'] || 80).to_i
+  port = (ENV['port'] || 3000).to_i
   config = {
     Port: port, DocumentRoot: root,
     StartCallback: proc { puts "WEBrick working on #{root}" },
@@ -93,12 +93,13 @@ def compile_coffee_script(coffee_script, js_script)
 
   #compile and write to js file.
   begin
-    cs_code = File.read(coffee_script, {encoding: 'utf-8'})
+    cs_code = File.read(coffee_script) #, {encoding: "utf-8:utf-8"}
     #puts "(my codes:\n#{cs_code.encoding})-#{cs_code}"
     js_code = CoffeeScript.compile(cs_code)
   rescue => e
     js_code = %Q[alert("CoffeeScript compilation error: #{e}")]
   end
-  File.open(js_script, 'w', {encoding: 'utf-8:utf-8'}) { |f| f.write(js_code) }
+  #, {encoding: 'utf-8:utf-8'}
+  File.open(js_script, 'wb') { |f| f.write(js_code) }
   #puts "new_codes:\n#{File.read(js_script, {encoding: 'utf-8'})}"
 end

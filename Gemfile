@@ -6,6 +6,7 @@ gem 'cucumber'
 gem 'rspec-expectations'
 gem 'coffee-script'
 gem 'watir-webdriver'
+gem 'therubyrhino'
 
 #gem 'fssm' only works on CRuby not support JRUBY
 #gem 'listen'

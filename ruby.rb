@@ -1,5 +1,11 @@
 #encoding=utf-8
 
+read_text = File.read("d:/temp/t.txt") #, {encoding: "utf-8:utf-8"}
+puts "..........:#{read_text}"
+
+File.open('d:/temp/tt.txt', 'wb'){|f| x = f.write(read_text); puts "written ok:#{x}"}
+
+__END__
 # Test for run command
 def git_pull
   #lookup temp file dir

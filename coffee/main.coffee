@@ -1,5 +1,5 @@
 $(document).ready ->
-  $('ol').after('<h2>你好，Nanana。Coffee Script is ready, :-D </h2>')
+  $('ol').after('<h2>Nanana 娜娜，你好吗？ 理论为核心那你干嘛那.Coffee Script is ready, :-D </h2>')
 
 
 class Phonetic
@@ -11,7 +11,3 @@ class Phonetic
   name: ''
   voice: 'http://voice.url/code'
 
-
-myp = new Phonetic(t: 12)
-alert(myp.voice)
-alert("#{key} --> #{val}") for key,val of myp

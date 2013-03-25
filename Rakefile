@@ -25,7 +25,7 @@ task :server do
 end
 
 BASE_DIR = File.dirname(File.expand_path(__FILE__))
-DIST_DIR = File.absolute_path(File.join(BASE_DIR, '..', 'iEng_dist'))
+DIST_DIR = File.absolute_path(File.join(BASE_DIR, '_dist'))
 COFFEE_DIR = File.join(BASE_DIR, 'coffee')
 OUTPUT_DIR = File.join(BASE_DIR, 'javascripts')
 desc "Push to the Github.com"

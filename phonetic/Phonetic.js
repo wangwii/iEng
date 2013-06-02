@@ -1,4 +1,5 @@
 var Phonetic = {
+  // ə ɔ u ʌ
   iː: {
     abc: ["e", "ee", "ea", "ei", "ie"],
     words: ["he", "see", "heat", "ceiling", "field"],
@@ -10,5 +11,18 @@ var Phonetic = {
     words: ["fit", "build", "myth"],
     type: "vowel",
     group: "1"
-  }// ə ɔ u ʌ e æ
+  },
+  e: {
+    abc: ["e", "ea"],
+    words: ["bed", "dest", "head", "bread"],
+    type: "vowel",
+    group: "2"
+  },
+  æ: {
+    abc: ["a"],
+    words: ["map","stamp","hat"],
+    type: "vowel",
+    group: "2"
+  }
+
 };

@@ -9,10 +9,10 @@ task :server do
   root = File.dirname(File.expand_path __FILE__)
   port = (ENV['port'] || 3000).to_i
   config = {
-    Port: port, DocumentRoot: root,
-    StartCallback: proc { puts "WEBrick working on #{root}" },
-    StopCallback: proc { puts "WEBrick stop finished." },
-    RequestCallback: proc { |req| sync_coffee req }
+      Port: port, DocumentRoot: root,
+      StartCallback: proc { puts "WEBrick working on #{root}" },
+      StopCallback: proc { puts "WEBrick stop finished." },
+      RequestCallback: proc { |req| sync_coffee req }
   }
   server = WEBrick::HTTPServer.new config
 
@@ -46,15 +46,20 @@ end
 
 task :sync_resources => :recompile_coffee do
   verbose(true)
-  puts "Sync the javascripts directory..."
-  rm Dir.glob("#{DIST_DIR}/javascripts/*")
-  Dir.glob("#{OUTPUT_DIR}/*.js").each { |f| cp(f, "#{DIST_DIR}/javascripts/") }
+  dirs = %w(javascripts js css stylesheets img phonetic)
+  dirs.each do |dir|
+    puts "Sync the #{dir} directory..."
 
-  puts "Sync the stylesheets directory..."
-  rm Dir.glob("#{DIST_DIR}/stylesheets/*")
-  Dir.glob("#{BASE_DIR}/stylesheets/*").each { |f| cp(f, "#{DIST_DIR}/stylesheets/") }
+    if File.exist?("#{DIST_DIR}/#{dir}")
+      rm Dir.glob("#{DIST_DIR}/#{dir}/*")
+    else
+      Dir.mkdir("#{DIST_DIR}/#{dir}")
+    end
 
-  puts "Sync the index.html file..."
+    Dir.glob("#{BASE_DIR}/#{dir}/*").each { |f| cp(f, "#{DIST_DIR}/#{dir}/") }
+  end
+
+  puts 'Sync the index.html file...'
   cp("#{BASE_DIR}/index.html", "#{DIST_DIR}/")
 end
 
@@ -94,7 +99,7 @@ def compile_coffee_script(coffee_script, js_script)
   #compile and write to js file.
   begin
     cs_code = File.read(coffee_script) #, {encoding: "utf-8:utf-8"}
-    #puts "(my codes:\n#{cs_code.encoding})-#{cs_code}"
+                                       #puts "(my codes:\n#{cs_code.encoding})-#{cs_code}"
     js_code = CoffeeScript.compile(cs_code)
   rescue => e
     js_code = %Q[alert("CoffeeScript compilation error: #{e}")]
